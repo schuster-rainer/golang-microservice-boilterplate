@@ -1,0 +1,34 @@
+# docker compose file reference - https://docs.docker.com/compose/compose-file/
+version: "3.7"
+
+services:
+  backend:
+    image: golang:1.13.4-alpine3.10
+    hostname: service.myservice.local
+    ports:
+      - "$MYSERVICE_PORT:$MYSERVICE_PORT" # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    depends_on:
+      - redis
+    env_file: .env
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/bin/ #ignore generated build artifact
+      - backend-gopath:/go/
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /app/bin
+        go get github.com/githubnemo/CompileDaemon 
+        CompileDaemon -log-prefix=false -build="go build -o bin/" -command="./bin/myservice"
+
+  # Redis Service
+  redis:
+    hostname: service.redis.local
+    image: "redis:alpine" # Use a public Redis image to build the redis service
+    # sysctls:
+    #   net.core.somaxconn: 4096
+
+volumes:
+  backend-gopath:
