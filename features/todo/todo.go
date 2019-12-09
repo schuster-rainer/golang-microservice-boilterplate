@@ -17,15 +17,15 @@ type Todo struct {
 // Routes for Todo type
 func Routes() *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/{todoID}", Get)
+	router.Get("/{todoID}", GetTodo)
 	router.Delete("/{todoID}", Delete)
 	router.Post("/", Create)
 	router.Get("/", Index)
 	return router
 }
 
-// Get a todo
-func Get(w http.ResponseWriter, r *http.Request) {
+// GetTodo a todo
+func GetTodo(w http.ResponseWriter, r *http.Request) {
 	todoID := chi.URLParam(r, "todoID")
 	todos := Todo{
 		Slug:  todoID,
